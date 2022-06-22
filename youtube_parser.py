@@ -1,3 +1,5 @@
+import datetime
+import json
 import logging
 import sys
 
@@ -40,3 +42,15 @@ class Parser:
         return googleapiclient.discovery.build(
             'youtube', 'v3', credentials=credentials
         )
+
+    @staticmethod
+    def to_json(data: list[dict], filename: str = ''):
+        logger = logging.getLogger('json-writer')
+
+        if not filename:
+            filename = f'{datetime.datetime.today().date()}.json'
+
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False)
+
+        logger.info(f'Successfully wrote data to {filename}')
