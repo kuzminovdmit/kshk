@@ -15,6 +15,8 @@ logging.basicConfig(
     format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
 )
 
+logger = logging.getLogger(__name__)
+
 
 class Parser:
     def __init__(self):
@@ -22,7 +24,6 @@ class Parser:
 
     @staticmethod
     def auth() -> googleapiclient.discovery.Resource:
-        logger = logging.getLogger('youtube_parser.auth')
         store = Storage('credentials.json')
         credentials = store.get()
 
@@ -45,9 +46,8 @@ class Parser:
 
     @staticmethod
     def to_json(data: list[dict], filename: str = ''):
-        logger = logging.getLogger('json-writer')
-
         if not filename:
+            logger.warning(f'No filename was provided, using datestamp as filename')
             filename = f'{datetime.datetime.today().date()}.json'
 
         with open(filename, 'w', encoding='utf-8') as f:
@@ -57,8 +57,6 @@ class Parser:
 
     @staticmethod
     def read_json(filename: str) -> list[dict]:
-        logger = logging.getLogger('json-reader')
-
         try:
             with open(filename, 'r', encoding='utf-8') as f:
                 data = json.load(f)
