@@ -60,3 +60,19 @@ class Parser:
         logger.info('Successfully read data from %s', filename)
 
         return data
+
+    @staticmethod
+    def process_response(items: list[dict]) -> list[dict]:
+        processed_results = []
+
+        for item in items:
+            result = {
+                'youtube_id': item['snippet']['resourceId']['videoId'],
+                'stream_name': item['snippet']['title'],
+                'stream_date': item['snippet']['title'][-8:],
+                'thumbnail_url': item['snippet']['thumbnails']['high']['url']
+            }
+            logger.info('Processed %s', result['stream_name'])
+            processed_results.append(result)
+
+        return processed_results
