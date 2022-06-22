@@ -131,3 +131,7 @@ dmypy.json
 # Secret files
 client_secret_file.json
 credentials.json
+
+# IDE settings
+.idea/
+.vscode/
