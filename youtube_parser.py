@@ -54,3 +54,18 @@ class Parser:
             json.dump(data, f, ensure_ascii=False)
 
         logger.info(f'Successfully wrote data to {filename}')
+
+    @staticmethod
+    def read_json(filename: str) -> list[dict]:
+        logger = logging.getLogger('json-reader')
+
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except IOError as e:
+            logger.error(e)
+            data = []
+
+        logger.info(f'Successfully read data from {filename}')
+
+        return data
