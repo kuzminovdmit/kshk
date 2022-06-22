@@ -1,19 +1,12 @@
 import datetime
 import json
 import logging
-import sys
 
 import googleapiclient.discovery
 import googleapiclient.errors
 from oauth2client import client, tools
 from oauth2client.file import Storage
 
-
-logging.basicConfig(
-    stream=sys.stdout,
-    level=logging.INFO,
-    format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
-)
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +31,7 @@ class Parser:
             )
             credentials = tools.run_flow(flow, store)
 
-        logger.info(f'Successfully retrieved credentials')
+        logger.info('Successfully retrieved credentials')
 
         return googleapiclient.discovery.build(
             'youtube', 'v3', credentials=credentials
@@ -47,13 +40,13 @@ class Parser:
     @staticmethod
     def to_json(data: list[dict], filename: str = ''):
         if not filename:
-            logger.warning(f'No filename was provided, using datestamp as filename')
+            logger.warning('No filename was provided, using datestamp as filename')
             filename = f'{datetime.datetime.today().date()}.json'
 
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False)
 
-        logger.info(f'Successfully wrote data to {filename}')
+        logger.info('Successfully wrote data to %s', filename)
 
     @staticmethod
     def read_json(filename: str) -> list[dict]:
@@ -64,6 +57,6 @@ class Parser:
             logger.error(e)
             data = []
 
-        logger.info(f'Successfully read data from {filename}')
+        logger.info('Successfully read data from %s', filename)
 
         return data
