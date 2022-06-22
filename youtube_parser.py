@@ -76,3 +76,21 @@ class Parser:
             processed_results.append(result)
 
         return processed_results
+
+    def get_comment_for_stream(self, stream: dict) -> dict:
+        comment_author_id = 'UCQNehrkIUBjkRkgfmgzS2dw'
+
+        try:
+            response = self.client.commentThreads().list(
+                part='snippet',
+                videoId=stream['youtube_id']
+            ).execute()
+
+            for item in response['items']:
+                if item['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] == comment_author_id:
+                    stream['comment'] = item['snippet']['topLevelComment']['snippet']['textDisplay']
+                    logger.info(f'Timecodes for %s added', stream['stream_name'])
+        except googleapiclient.errors.HttpError as e:
+            stream['comment'] = ''
+
+        return stream
