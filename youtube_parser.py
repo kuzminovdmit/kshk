@@ -94,3 +94,48 @@ class Parser:
             stream['comment'] = ''
 
         return stream
+
+    def get_streams_from_playlist(self, playlist_id: str) -> list[dict]:
+        """
+        Return list of streams from YouTube playlist by its id, assembled in
+        dictionary with "youtube_id", "stream_name", "stream_date", "thumbnail_url"
+        and "comment" fields.
+        """
+        processed_results = []
+
+        response = self.client.playlistItems().list(
+            part='snippet', maxResults=50, playlistId=playlist_id
+        ).execute()
+        logger.info('Make first playlistItems.list request')
+
+        total_results = response['pageInfo']['totalResults']
+        unprocessed_data_count = total_results
+        logger.info('Get %s of total %s results', len(response['items'], unprocessed_data_count))
+
+        processed_data = self.process_response(response['items'])
+        processed_results += processed_data
+        unprocessed_data_count -= len(processed_data)
+
+        if unprocessed_data_count:
+            next_page_token = response['nextPageToken']
+
+        while unprocessed_data_count:
+            response = self.client.playlistItems().list(
+                part='snippet', maxResults=50,
+                playlistId=playlist_id, pageToken=next_page_token
+            ).execute()
+            logger.info('Get next %s of %s results remaining', len(response['items'], unprocessed_data_count))
+
+            processed_data = self.process_response(response['items'])
+            processed_results += processed_data
+            unprocessed_data_count -= len(processed_data)
+
+            if unprocessed_data_count:
+                next_page_token = response['nextPageToken']
+
+        try:
+            assert len(processed_results) == total_results
+        except AssertionError:
+            logger.warning('Some results were not processed')
+
+        return processed_results
